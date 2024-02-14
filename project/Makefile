@@ -11,10 +11,14 @@ all: bfomp
 
 %: src/%.c
 	@mkdir -p bin/
+	@mkdir -p input/
+	@mkdir -p output/
 	$(CC) $(CFLAGS) $< -fopenmp -o bin/$@.out
 
 %: src/%.cu
 	@mkdir -p bin/
+	@mkdir -p input/
+	@mkdir -p output/
 	$(CU) $(CUDAFLAGS) $< -o bin/$@.out
 
 clean:
