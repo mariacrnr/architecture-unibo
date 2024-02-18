@@ -9,7 +9,6 @@
 
 
 #define INF 1000000
-int verbose = 1;
 
 int* read_input(char* filename, int *source, int *V) {
     char folder[] = "input/";
