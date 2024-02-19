@@ -136,7 +136,7 @@ void bellmanford(int V, int *graph, int source, int *dist, int threads, int *has
 
 int main(){
 
-    char filename[] = "negative.txt";
+    char filename[] = "graph.txt";
 
     int threads = atoi(getenv("OMP_NUM_THREADS"));
 
@@ -150,7 +150,7 @@ int main(){
     bellmanford(V, graph, source, dist, threads, &has_negative);
     double tstop = omp_get_wtime();
 
-    printf("Elapsed Time: %f seconds\n", (tstop-tstart) * 1000);
+    printf("Elapsed Time: %f milliseconds\n", (tstop-tstart) * 1000);
 
     print_output(filename, V, dist, has_negative);
 
