@@ -12,7 +12,7 @@
 
 int* read_input(char* filename, int *source, int *V) {
     char folder[] = "input/";
-    char *path = malloc(strlen(folder) + strlen(filename) + 1);
+    char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
     strcpy(path, folder);
 
     FILE *file = fopen(strcat(path, filename), "r");
@@ -27,7 +27,7 @@ int* read_input(char* filename, int *source, int *V) {
         return NULL;
     }
 
-    int* graph = malloc((size_t)(*V) * (size_t)(*V) * sizeof(int *));
+    int* graph = (int*) malloc((size_t)(*V) * (size_t)(*V) * sizeof(int *));
     if (graph == NULL) {
         fprintf(stderr, "Memory allocation error.\n");
         fclose(file);
@@ -53,8 +53,8 @@ int* read_input(char* filename, int *source, int *V) {
 }
 
 void print_output(char* filename, int V, int *distances, int has_negative){
-    char folder[] = "output/";
-    char *path = malloc(strlen(folder) + strlen(filename) + 1);
+    char folder[] = "output/omp/";
+    char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
     strcpy(path, folder);
 
     FILE *file = fopen(strcat(path, filename), "w");
@@ -150,7 +150,7 @@ int main(){
     bellmanford(V, graph, source, dist, threads, &has_negative);
     double tstop = omp_get_wtime();
 
-    printf("Elapsed Time: %f seconds\n", (tstop-tstart));
+    printf("Elapsed Time: %f seconds\n", (tstop-tstart) * 1000);
 
     print_output(filename, V, dist, has_negative);
 
