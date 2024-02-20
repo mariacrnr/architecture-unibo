@@ -11,11 +11,11 @@
 #define INF 1000000
 
 int* read_input(char* filename, int *V) {
-    char folder[] = "input/";
+    char folder[] = "input/test/";
     char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
     strcpy(path, folder);
 
-    FILE *file = fopen(strcat(path, filename), "r");
+    FILE *file = fopen(strcat(strcat(path, filename), ".txt"), "r");
     if (file == NULL) {
         fprintf(stderr, "Error opening file.\n");
         return NULL;
@@ -52,12 +52,15 @@ int* read_input(char* filename, int *V) {
     return graph;
 }
 
-void write_output(char* filename, int V, int *distances, int has_negative){
+void write_output(char* filename, int V, int *distances, int has_negative, int threads){
     char folder[] = "output/omp/";
     char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
     strcpy(path, folder);
 
-    FILE *file = fopen(strcat(path, filename), "w");
+    char sfilename[256];
+    sprintf(sfilename, "%s_%d.txt", filename, threads);
+
+    FILE *file = fopen(strcat(path, sfilename), "w");
     if (file == NULL) {
         fprintf(stderr, "Error opening file.\n");
         return;
@@ -134,13 +137,19 @@ void bellmanford(int V, int *graph, int source, int *dist, int threads, int *has
     }
 }
 
-int main(){
-    // SOURCE DOS ARGUMENTS
-    char filename[] = "graph.txt";
+int main(int argc, char **argv){
 
     int threads = atoi(getenv("OMP_NUM_THREADS"));
 
-    int source = 0, V, has_negative = 0;
+    if (argc != 3) {
+        printf("Usage: OMP_NUM_THREADS=%d %s source_vertex filename \n", threads, argv[0]);
+        return 1;
+    }
+
+    int source = atoi(argv[1]);
+    char *filename = argv[2];
+
+    int V, has_negative = 0;
     int *graph = read_input(filename, &V);
     if(graph == NULL) return 1;
 
@@ -150,9 +159,9 @@ int main(){
     bellmanford(V, graph, source, dist, threads, &has_negative);
     double tstop = omp_get_wtime();
 
-    printf("Elapsed Time: %f milliseconds\n", (tstop-tstart) * 1000);
+    printf("%d Vertices -> Elapsed Time: %f milliseconds\n", V, (tstop-tstart) * 1000);
 
-    write_output(filename, V, dist, has_negative);
+    write_output(filename, V, dist, has_negative, threads);
 
     free(dist);
     free(graph);

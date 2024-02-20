@@ -11,15 +11,14 @@
 
 
 #define INF 1000000
-#define BLKDIM 128
 
 
 int* read_input(char* filename, int *V) {
-    char folder[] = "input/";
+    char folder[] = "input/test/";
     char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
     strcpy(path, folder);
 
-    FILE *file = fopen(strcat(path, filename), "r");
+    FILE *file = fopen(strcat(strcat(path, filename), ".txt"), "r");
     if (file == NULL) {
         fprintf(stderr, "Error opening file.\n");
         return NULL;
@@ -56,12 +55,16 @@ int* read_input(char* filename, int *V) {
     return graph;
 }
 
-void print_output(char* filename, int V, int *distances, int has_negative){
+void write_output(char* filename, int V, int *distances, int has_negative, int block_dim){
     char folder[] = "output/cuda/";
     char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
     strcpy(path, folder);
 
-    FILE *file = fopen(strcat(path, filename), "w");
+    char sfilename[256];
+    sprintf(sfilename, "%s_%d.txt", filename, block_dim);
+
+    FILE *file = fopen(strcat(path, sfilename), "w");
+
     if (file == NULL) {
         fprintf(stderr, "Error opening file.\n");
         return;
@@ -100,7 +103,7 @@ __global__ void bellmanford_kernel(int i, int V, int *graph, int *dist, int *has
 
 }
 
-void bellmanford(int V, int *graph, int source, int *dist, int *has_negative, float *gpu_time){
+void bellmanford(int V, int *graph, int source, int *dist, int *has_negative, float *gpu_time, const int block_dim){
 
 	int *d_graph, *d_dist;
 	int *d_has_changed, h_has_changed;
@@ -132,7 +135,7 @@ void bellmanford(int V, int *graph, int source, int *dist, int *has_negative, fl
 		cudaMemcpy(d_has_negative, &h_has_negative, sizeof(int), cudaMemcpyHostToDevice);
 
         cudaEventRecord(start);
-		bellmanford_kernel<<<(V + BLKDIM - 1) / BLKDIM, BLKDIM>>>(i, V, d_graph, d_dist, d_has_changed, d_has_negative);
+		bellmanford_kernel<<<(V + block_dim- 1) / block_dim, block_dim>>>(i, V, d_graph, d_dist, d_has_changed, d_has_negative);
         cudaDeviceSynchronize();
 
         cudaEventRecord(stop);
@@ -158,11 +161,17 @@ void bellmanford(int V, int *graph, int source, int *dist, int *has_negative, fl
 	cudaFree(d_has_changed);
 }
 
-int main(){
-    // SOURCE DOS ARGUMENTS
-    char filename[] = "negative.txt";
+int main(int argc, char **argv){
+    if (argc != 4) {
+        printf("Usage: %s block_dim source_vertex filename \n", argv[0]);
+        return 1;
+    }
 
-    int source = 0, V, has_negative;
+    const int block_dim = atoi(argv[1]);
+    int source = atoi(argv[2]);
+    char *filename = argv[3];
+
+    int V, has_negative;
     int *graph = read_input(filename, &V);
     if(graph == NULL) return 1;
 
@@ -171,12 +180,12 @@ int main(){
     float gpu_time = 0;
 
     cudaDeviceReset();
-    bellmanford(V, graph, source, dist, &has_negative, &gpu_time);
+    bellmanford(V, graph, source, dist, &has_negative, &gpu_time, block_dim);
     cudaDeviceSynchronize();
 
-    printf("Elapsed Time: %f milliseconds\n", gpu_time);
+    printf("%d Vertices-> Elapsed Time: %f milliseconds\n", V, gpu_time);
 
-    print_output(filename, V, dist, has_negative);
+    write_output(filename, V, dist, has_negative, block_dim);
 
     free(dist);
     free(graph);

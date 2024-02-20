@@ -28,7 +28,7 @@ void write_graph(int vertices, int *graph, const char *filename) {
     char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
     strcpy(path, folder);
 
-    FILE *file = fopen(strcat(path, filename), "w");
+    FILE *file = fopen(strcat(strcat(path, filename), ".txt"), "w");
     if (file == NULL) {
         printf("Error opening file.\n");
         exit(1);
@@ -70,7 +70,7 @@ int main(int argc, char **argv){
     generate_random_graph(num_vertices, graph, is_negative, edge_probability, max_weight);
 
     write_graph(num_vertices, graph, filename);
-    printf("Graph generated and written to file '%s'!\n", filename);
+    printf("Graph generated and written to file '%s.txt'!\n", filename);
 
     return 0;
 }

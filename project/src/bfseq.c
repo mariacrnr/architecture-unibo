@@ -9,11 +9,11 @@
 #define INF 1000000
 
 int* read_input(char* filename, int *V) {
-    char folder[] = "input/";
+    char folder[] = "input/test/";
     char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
     strcpy(path, folder);
 
-    FILE *file = fopen(strcat(path, filename), "r");
+    FILE *file = fopen(strcat(strcat(path, filename), ".txt"), "r");
     if (file == NULL) {
         fprintf(stderr, "Error opening file.\n");
         return NULL;
@@ -46,6 +46,7 @@ int* read_input(char* filename, int *V) {
     }
 
     fclose(file);
+    free(path);
 
     return graph;
 }
@@ -55,7 +56,10 @@ void write_output(char* filename, int V, int *distances, int has_negative){
     char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
     strcpy(path, folder);
 
-    FILE *file = fopen(strcat(path, filename), "w");
+    char sfilename[256];
+    sprintf(sfilename, "%s.txt", filename);
+
+    FILE *file = fopen(strcat(path, sfilename), "w");
     if (file == NULL) {
         fprintf(stderr, "Error opening file.\n");
         return;
@@ -71,6 +75,7 @@ void write_output(char* filename, int V, int *distances, int has_negative){
     fprintf(file, "\n");
 
     fclose(file);
+    free(path);
 }
 
 void bellmanford(int V, int *graph, int source, int *dist, int *has_negative){
@@ -101,11 +106,16 @@ void bellmanford(int V, int *graph, int source, int *dist, int *has_negative){
     }
 }
 
-int main(){
-    // SOURCE DOS ARGUMENTS
-    char filename[] = "graph.txt";
+int main(int argc, char **argv){
+    if (argc != 3) {
+        printf("Usage: %s source_vertex filename \n", argv[0]);
+        return 1;
+    }
 
-    int source = 0, V, has_negative = 0;
+    int source = atoi(argv[1]);
+    char *filename = argv[2];
+
+    int V, has_negative = 0;
     int *graph = read_input(filename, &V);
     if(graph == NULL) return 1;
 
