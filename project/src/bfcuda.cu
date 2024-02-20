@@ -11,7 +11,7 @@
 
 
 #define INF 1000000
-#define BLKDIM 32
+#define BLKDIM 128
 
 
 int* read_input(char* filename, int *source, int *V) {
@@ -83,27 +83,24 @@ __global__ void bellmanford_kernel(int i, int V, int *graph, int *dist, int *has
     int block_index = blockDim.x * blockIdx.x + threadIdx.x;
 	int block_inc = blockDim.x * gridDim.x;
 
-	if(block_index >= V) return;
-	for(int u = 0 ; u < V ; u ++){
-		for(int v = block_index; v < V; v+= block_inc){
-            int updated_dist = graph[u * V + v] + dist[u];
-            if (graph[u * V + v] < INF && updated_dist < dist[v]){
-                dist[v] = updated_dist;
-                *has_changed = 1;
+	if(block_index < V){
+        for(int u = 0 ; u < V ; u ++){
+            for(int v = block_index; v < V; v+= block_inc){
+                int updated_dist = graph[u * V + v] + dist[u];
+                if (graph[u * V + v] < INF && updated_dist < dist[v]){
+                    dist[v] = updated_dist;
+                    *has_changed = 1;
+                }
             }
-		}
-	}
-
+        }
+    }
     __syncthreads();
 
     if(i == V-1 && has_changed) *has_negative = 1;
 
 }
 
-void bellmanford(int blocks_grid, int threads_block, int V, int *graph, int source, int *dist, int *has_negative, float *gpu_time){
-    
-    dim3 blocks(blocks_grid);
-    dim3 threads(threads_block);
+void bellmanford(int V, int *graph, int source, int *dist, int *has_negative, float *gpu_time){
 
 	int *d_graph, *d_dist;
 	int *d_has_changed, h_has_changed;
@@ -135,7 +132,7 @@ void bellmanford(int blocks_grid, int threads_block, int V, int *graph, int sour
 		cudaMemcpy(d_has_negative, &h_has_negative, sizeof(int), cudaMemcpyHostToDevice);
 
         cudaEventRecord(start);
-		bellmanford_kernel<<<blocks, threads>>>(i, V, d_graph, d_dist, d_has_changed, d_has_negative);
+		bellmanford_kernel<<<(V + BLKDIM - 1) / BLKDIM, BLKDIM>>>(i, V, d_graph, d_dist, d_has_changed, d_has_negative);
         cudaDeviceSynchronize();
 
         cudaEventRecord(stop);
@@ -156,9 +153,6 @@ void bellmanford(int blocks_grid, int threads_block, int V, int *graph, int sour
 		cudaMemcpy(dist, d_dist, sizeof(int) * V, cudaMemcpyDeviceToHost);
 	}
 
-
-    printf("%d", *has_negative);
-
 	cudaFree(d_graph);
 	cudaFree(d_dist);
 	cudaFree(d_has_changed);
@@ -166,7 +160,7 @@ void bellmanford(int blocks_grid, int threads_block, int V, int *graph, int sour
 
 int main(){
 
-    char filename[] = "simple.txt";
+    char filename[] = "negative.txt";
 
     int source, V, has_negative;
     int *graph = read_input(filename, &source, &V);
@@ -177,7 +171,7 @@ int main(){
     float gpu_time = 0;
 
     cudaDeviceReset();
-    bellmanford(1, 1, V, graph, source, dist, &has_negative, &gpu_time);
+    bellmanford(V, graph, source, dist, &has_negative, &gpu_time);
     cudaDeviceSynchronize();
 
     printf("Elapsed Time: %f milliseconds\n", gpu_time);
