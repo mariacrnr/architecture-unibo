@@ -10,7 +10,7 @@
 
 #define INF 1000000
 
-int* read_input(char* filename, int *source, int *V) {
+int* read_input(char* filename, int *V) {
     char folder[] = "input/";
     char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
     strcpy(path, folder);
@@ -21,8 +21,8 @@ int* read_input(char* filename, int *source, int *V) {
         return NULL;
     }
 
-    if (fscanf(file, "%d %d", V, source) != 2) {
-        fprintf(stderr, "Error reading source and vertex count values.\n");
+    if (fscanf(file, "%d", V) != 1) {
+        fprintf(stderr, "Error reading vertex count.\n");
         fclose(file);
         return NULL;
     }
@@ -135,13 +135,13 @@ void bellmanford(int V, int *graph, int source, int *dist, int threads, int *has
 }
 
 int main(){
-
+    // SOURCE DOS ARGUMENTS
     char filename[] = "graph.txt";
 
     int threads = atoi(getenv("OMP_NUM_THREADS"));
 
-    int source, V, has_negative = 0;
-    int *graph = read_input(filename, &source, &V);
+    int source = 0, V, has_negative = 0;
+    int *graph = read_input(filename, &V);
     if(graph == NULL) return 1;
 
     int *dist = (int*) malloc(sizeof(int) * (size_t)V);

@@ -11,7 +11,7 @@ all: gengraph bfseq bfomp bfcuda
 
 gengraph: src/gengraph.c
 	@mkdir -p bin/
-	@mkdir -p input/
+	@mkdir -p input/test/
 	$(CC) $(CFLAGS) $< -o bin/$@.out
 
 bfseq: src/bfseq.c
@@ -31,3 +31,4 @@ bfcuda: src/bfcuda.cu
 
 clean:
 	$(RM) bin/*.out
+	$(RM) -rf input/test/
