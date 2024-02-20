@@ -7,17 +7,25 @@ CUDAFLAGS=-O3 --expt-relaxed-constexpr -arch=sm_52
 
 .PHONY: clean all
 
-all: bfomp bfcuda
+all: gengraph bfseq bfomp bfcuda
 
-%: src/%.c
+gengraph: src/gengraph.c
 	@mkdir -p bin/
 	@mkdir -p input/
+	$(CC) $(CFLAGS) $< -o bin/$@.out
+
+bfseq: src/bfseq.c
+	@mkdir -p bin/
+	@mkdir -p output/test
+	$(CC) $(CFLAGS) $< -o bin/$@.out
+
+bfomp: src/bfomp.c
+	@mkdir -p bin/
 	@mkdir -p output/omp
 	$(CC) $(CFLAGS) $< -fopenmp -o bin/$@.out
 
-%: src/%.cu
+bfcuda: src/bfcuda.cu
 	@mkdir -p bin/
-	@mkdir -p input/
 	@mkdir -p output/cuda
 	$(CU) $(CUDAFLAGS) $< -o bin/$@.out
 

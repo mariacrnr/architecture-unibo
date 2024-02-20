@@ -52,7 +52,7 @@ int* read_input(char* filename, int *source, int *V) {
     return graph;
 }
 
-void print_output(char* filename, int V, int *distances, int has_negative){
+void write_output(char* filename, int V, int *distances, int has_negative){
     char folder[] = "output/omp/";
     char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
     strcpy(path, folder);
@@ -152,7 +152,7 @@ int main(){
 
     printf("Elapsed Time: %f milliseconds\n", (tstop-tstart) * 1000);
 
-    print_output(filename, V, dist, has_negative);
+    write_output(filename, V, dist, has_negative);
 
     free(dist);
     free(graph);
