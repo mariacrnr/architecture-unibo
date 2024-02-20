@@ -32,3 +32,4 @@ bfcuda: src/bfcuda.cu
 clean:
 	$(RM) bin/*.out
 	$(RM) -rf input/test/
+	$(RM) -rf output/
