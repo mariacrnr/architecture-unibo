@@ -64,8 +64,8 @@ int main(int argc, char **argv){
         return 1;
     }
 
-    char * sign = is_negative? " and negative " : " ";
-    printf("Generating graph '%s' with %d vertices and %d%% edge probability with positive%sedge weights ranging to %d.\n", filename, num_vertices, (int)(edge_probability * 100), sign, max_weight);
+    // char * sign = is_negative? " and negative " : " ";
+    // printf("Generating graph '%s' with %d vertices and %d%% edge probability with positive%sedge weights ranging to %d.\n", filename, num_vertices, (int)(edge_probability * 100), sign, max_weight);
 
     generate_random_graph(num_vertices, graph, is_negative, edge_probability, max_weight);
 
