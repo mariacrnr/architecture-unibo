@@ -15,7 +15,7 @@ int* read_input(char* filename, int *V) {
 
     FILE *file = fopen(strcat(strcat(path, filename), ".txt"), "r");
     if (file == NULL) {
-        fprintf(stderr, "Error opening file.\n");
+        fprintf(stderr, "Error opening input file.\n");
         return NULL;
     }
 
@@ -61,7 +61,7 @@ void write_output(char* filename, int V, int *distances, int has_negative){
 
     FILE *file = fopen(strcat(path, sfilename), "w");
     if (file == NULL) {
-        fprintf(stderr, "Error opening file.\n");
+        fprintf(stderr, "Error opening output file.\n");
         return;
     }
 
