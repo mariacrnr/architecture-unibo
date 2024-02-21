@@ -63,12 +63,6 @@ echo "Block Dimensions: 256                                                     
 ./bin/bfcuda.out 0 "2000_pos" 256
 ./bin/bfcuda.out 0 "3000_pos" 256
 ./bin/bfcuda.out 0 "4000_pos" 256
-echo "                                                                                                                         "
-echo "Block Dimensions: 256 Blocks per Grid: 1                                                                                  "
-./bin/bfcuda.out 0 "1000_pos" 256 1
-./bin/bfcuda.out 0 "2000_pos" 256 1
-./bin/bfcuda.out 0 "3000_pos" 256 1
-./bin/bfcuda.out 0 "4000_pos" 256 1
 echo "                                                                                                                        "
 echo "------------------------------------------Bellman-Ford OMP w/ Positive/Negative Weights---------------------------------"
 echo "                                                                                                                        "
@@ -76,13 +70,13 @@ echo "Number of Threads: 1"
 OMP_NUM_THREADS=1 ./bin/bfomp.out 0 "2000_neg"
 echo "Number of Threads: 2"
 OMP_NUM_THREADS=2 ./bin/bfomp.out 0 "2000_neg"
-echo "Number of Threads: 3"
-OMP_NUM_THREADS=4 ./bin/bfomp.out 0 "2000_neg"
 echo "Number of Threads: 4"
+OMP_NUM_THREADS=4 ./bin/bfomp.out 0 "2000_neg"
+echo "Number of Threads: 8"
 OMP_NUM_THREADS=8 ./bin/bfomp.out 0 "2000_neg"
 echo "                                                                                                                        "
 echo "-----------------------------------------Bellman-Ford CUDA w/ Positive/Negative Weights---------------------------------"
 echo "                                                                                                                        "
-./bin/bfcuda.out 0 "2000_neg" 256 1 
+./bin/bfcuda.out 0 "2000_neg" 64
 echo "                                                                                                                        "
 echo "------------------------------------------------------------------------------------------------------------------------"

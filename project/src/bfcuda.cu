@@ -135,10 +135,10 @@ void bellmanford(int V, int *graph, int source, int *dist, int *has_negative, fl
 		cudaMemcpy(d_has_negative, &h_has_negative, sizeof(int), cudaMemcpyHostToDevice);
 
         cudaEventRecord(start);
-		bellmanford_kernel<<<1,256>>>(i, V, d_graph, d_dist, d_has_changed, d_has_negative);
+		bellmanford_kernel<<<blocks_grid, block_dim>>>(i, V, d_graph, d_dist, d_has_changed, d_has_negative);
         cudaDeviceSynchronize();
-
         cudaEventRecord(stop);
+        
         cudaEventSynchronize(stop);
         cudaEventElapsedTime(&time, start, stop);
         *gpu_time += time;
@@ -170,9 +170,6 @@ int main(int argc, char **argv){
 
     int source = atoi(argv[1]);
     char *filename = argv[2];
-
-
-    //printf("%d %d \n", block_dim, blocks_grid);
 
     int V, has_negative;
     int *graph = read_input(filename, &V);
