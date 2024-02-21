@@ -68,7 +68,7 @@ void write_graph(int vertices, int *graph, const char *filename) {
 
 int main(int argc, char **argv){
     if (argc != 6) {
-        printf("Usage: %s num_vertices max_weight is_negative edge_probability filename.txt\n", argv[0]);
+        printf("Usage: %s num_vertices max_weight is_negative edge_probability filename\n", argv[0]);
         return 1;
     }
 

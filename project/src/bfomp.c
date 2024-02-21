@@ -170,12 +170,13 @@ void bellmanford(int V, int *graph, int source, int *dist, int threads, int *has
 
 int main(int argc, char **argv){
 
-    int threads = atoi(getenv("OMP_NUM_THREADS"));
 
     if (argc != 3) {
-        printf("Usage: OMP_NUM_THREADS=%d %s source_vertex filename \n", threads, argv[0]);
+        printf("Usage: OMP_NUM_THREADS=num_threads %s source_vertex filename \n", argv[0]);
         return 1;
     }
+
+    int threads = atoi(getenv("OMP_NUM_THREADS"));
 
     int source = atoi(argv[1]);
     char *filename = argv[2];
