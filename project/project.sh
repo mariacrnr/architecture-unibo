@@ -1,3 +1,6 @@
+# Builds and executes the commands necessary to test the execution
+
+
 make clean all || exit 1
 
 echo "                                                                                                                        "
@@ -12,6 +15,8 @@ echo "                                                                          
 # Directed graphs also with negative weights to test omp and cuda negative cycle detection 
 ./bin/gengraph.out 2000 1000 1 80 "2000_neg"
 echo "                                                                                                                        "
+
+# Tests to the OMP implementation of Bellman-Ford, varying the number of threads and the number of vertices of the input graph
 echo "------------------------------------------Bellman-Ford OMP w/ Positive Weights------------------------------------------"
 echo "                                                                                                                        "
 echo "Number of Threads: 1                                                                                                    "
@@ -38,6 +43,8 @@ OMP_NUM_THREADS=8 ./bin/bfomp.out 0 "2000_pos"
 OMP_NUM_THREADS=8 ./bin/bfomp.out 0 "3000_pos"
 OMP_NUM_THREADS=8 ./bin/bfomp.out 0 "4000_pos"
 echo "                                                                                                                        "
+
+# Tests to the CUDA implementation of Bellman-Ford, varying the number of vertices of the input graph and the block dimensions
 echo "------------------------------------------Bellman-Ford CUDA w/ Positive Weights-----------------------------------------"
 echo "                                                                                                                        "
 echo "Block Dimensions: 32                                                                                                    "
@@ -64,6 +71,9 @@ echo "Block Dimensions: 256                                                     
 ./bin/bfcuda.out 0 "3000_pos" 256
 ./bin/bfcuda.out 0 "4000_pos" 256
 echo "                                                                                                                        "
+
+# Tests to the OMP implementation of Bellman-Ford, varying the number of threads of the input graph, on a graph that has negative 
+# weights
 echo "------------------------------------------Bellman-Ford OMP w/ Positive/Negative Weights---------------------------------"
 echo "                                                                                                                        "
 echo "Number of Threads: 1"
@@ -75,6 +85,8 @@ OMP_NUM_THREADS=4 ./bin/bfomp.out 0 "2000_neg"
 echo "Number of Threads: 8"
 OMP_NUM_THREADS=8 ./bin/bfomp.out 0 "2000_neg"
 echo "                                                                                                                        "
+
+# Tests to the CUDA implementation of Bellman-Ford, varying the number of vertices of the input graph and the block dimensions
 echo "-----------------------------------------Bellman-Ford CUDA w/ Positive/Negative Weights---------------------------------"
 echo "                                                                                                                        "
 ./bin/bfcuda.out 0 "2000_neg" 64

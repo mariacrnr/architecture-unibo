@@ -1,4 +1,5 @@
-// Bellman Ford Algorithm in C
+// bfomp.c
+// Implements the OMP parallel version of the Bellman-Ford Algorithm.
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +11,13 @@
 
 #define INF 1000000
 
+/**
+ * Read the input graph from a file. The file should have the number of vertices on the first line followed by the adjacency matrix of the graph.
+ *
+ * @param filename Name of the file containing the graph.
+ * @param V Pointer to store the number of vertices read from the file.
+ * @return Pointer to the array representing the graph if successful, otherwise NULL.
+ */
 int* read_input(char* filename, int *V) {
     char folder[] = "input/test/";
     char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
@@ -52,6 +60,16 @@ int* read_input(char* filename, int *V) {
     return graph;
 }
 
+/**
+ * Write the output distances from the Bellman-Ford algorithm to a file. If the graph contains a negative cycle, 
+ * it writes a message indicating the presence of a negative cycle.
+ * 
+ * @param filename Name of the output file.
+ * @param V Number of vertices in the graph.
+ * @param distances Array containing the distances from the source vertex.
+ * @param has_negative Flag indicating whether the graph contains a negative cycle.
+ * @param threads Number of threads used in the computation.
+ */
 void write_output(char* filename, int V, int *distances, int has_negative, int threads){
     char folder[] = "output/omp/";
     char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
@@ -78,12 +96,23 @@ void write_output(char* filename, int V, int *distances, int has_negative, int t
     fclose(file);
 }
 
+/**
+ * Implements the OMP parallel version of the Bellman-Ford algorithm to find shortest paths from a source vertex. 
+ *
+ * @param V Number of vertices in the graph.
+ * @param graph Pointer to the array representing the graph.
+ * @param source Source vertex from which shortest paths are computed.
+ * @param dist Array to store the distances from the source vertex.
+ * @param threads Number of threads to use for parallelization.
+ * @param has_negative Pointer to a flag indicating whether the graph contains a negative cycle.
+ */
 void bellmanford(int V, int *graph, int source, int *dist, int threads, int *has_negative){
 
     // Initialize thread distribution
     int thread_start[threads], thread_end[threads];
     int q = V / threads, r = V % threads;
 
+    // Distributes the vertices for the threads
     #pragma omp parallel for
     for (int i = 0; i < threads; i++){
         thread_start[i] = q * i + (i < r ? i : r);
@@ -100,6 +129,7 @@ void bellmanford(int V, int *graph, int source, int *dist, int threads, int *has
     int dist_changed = 0;
     int thread_changed[threads];
 
+    // Paralellizes main loop
     #pragma omp parallel
     {
         int rank = omp_get_thread_num();
@@ -114,25 +144,26 @@ void bellmanford(int V, int *graph, int source, int *dist, int threads, int *has
                     int updated_dist = graph[u * V + v] + dist[u];
                     if (graph[u * V + v] < INF && updated_dist < dist[v]){
                         dist[v] = updated_dist;
-                        thread_changed[rank] = 1;
+                        thread_changed[rank] = 1; // True when the distance has changed
                     }
                 }
             }
 
-            #pragma omp barrier         
+            #pragma omp barrier  // Threads must sync       
             #pragma omp single
             {
                 dist_changed = 0;
                 for(int rank_n = 0; rank_n < threads; rank_n++){
-                    if(thread_changed[rank_n] && (i == V - 1)){
-                        *has_negative = 1;
+                    if(thread_changed[rank_n] && (i == V - 1)){ 
+                        *has_negative = 1; // Graph contains negative cycle if a distance has decreased in the last iteration
                         break;
                     } 
-                    dist_changed |= thread_changed[rank_n];
+                    dist_changed |= thread_changed[rank_n]; // Verifies if any thread changed distances
                 }
             }
 
-            if(!dist_changed || *has_negative) break;
+            if(!dist_changed || *has_negative) break; // Return if there is a negative cycle or if the last cycle didn't provide any changes in distance
+
         }
     }
 }

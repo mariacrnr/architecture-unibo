@@ -1,3 +1,6 @@
+// gengraph.c
+// Generates random graphs used for testing the parallel implementations of the algorithms.
+
 #include<stdio.h>
 #include<stdlib.h>
 #include <time.h>
@@ -5,8 +8,17 @@
 
 #define INF 1000000
 
+/**
+ * Generates a random graph with given parameters.
+ *
+ * @param vertices Number of vertices in the graph.
+ * @param graph Pointer to the array representing the graph.
+ * @param is_negative Flag indicating whether the graph can have negative weights.
+ * @param edge_probability Probability of having an edge between two vertices.
+ * @param max_weight Maximum weight of edges.
+ */
 void generate_random_graph(int vertices, int *graph, int is_negative, double edge_probability, int max_weight ) {
-    srand(42);
+    srand(42); // Same seed for reproducibility
     for (int i = 0; i < vertices; i++) {
         for (int j = 0; j < vertices; j++) {
             if (i == j) { // No self-loops
@@ -23,6 +35,14 @@ void generate_random_graph(int vertices, int *graph, int is_negative, double edg
     }
 }
 
+
+/**
+ * Write the generated graph to a file. Each line of the file represents a row in the adjacency matrix of the graph.
+ *
+ * @param vertices Number of vertices in the graph.
+ * @param graph Pointer to the array representing the graph.
+ * @param filename Name of the file to write the graph to.
+ */
 void write_graph(int vertices, int *graph, const char *filename) {
     char folder[] = "input/test/";
     char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
@@ -63,9 +83,6 @@ int main(int argc, char **argv){
         printf("Memory allocation failed.\n");
         return 1;
     }
-
-    // char * sign = is_negative? " and negative " : " ";
-    // printf("Generating graph '%s' with %d vertices and %d%% edge probability with positive%sedge weights ranging to %d.\n", filename, num_vertices, (int)(edge_probability * 100), sign, max_weight);
 
     generate_random_graph(num_vertices, graph, is_negative, edge_probability, max_weight);
 

@@ -1,4 +1,6 @@
-// Bellman Ford Algorithm in C
+// bfseq.c
+// Implements the sequential version of the Bellman-Ford Algorithm. 
+// Not used in experiments, used only for development to check if the parallel versions produce correct results.
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +10,13 @@
 
 #define INF 1000000
 
+/**
+ * Read the input graph from a file. The file should have the number of vertices on the first line followed by the adjacency matrix of the graph.
+ *
+ * @param filename Name of the file containing the graph.
+ * @param V Pointer to store the number of vertices read from the file.
+ * @return Pointer to the array representing the graph if successful, otherwise NULL.
+ */
 int* read_input(char* filename, int *V) {
     char folder[] = "input/test/";
     char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
@@ -37,7 +46,7 @@ int* read_input(char* filename, int *V) {
             char token[10]; 
             if (fscanf(file, "%s", token) == 1) {
                 if (strcmp(token, "INF") == 0) {
-                    graph[i * (*V) + j] = INF;
+                    graph[i * (*V) + j] = INF; // Save graph as 1D instead of 2D to save memory
                 } else {
                     graph[i * (*V) + j] = atoi(token);
                 }
@@ -51,6 +60,15 @@ int* read_input(char* filename, int *V) {
     return graph;
 }
 
+/**
+ * Write the output distances from the Bellman-Ford algorithm to a file. If the graph contains a negative cycle, 
+ * it writes a message indicating the presence of a negative cycle.
+ *
+ * @param filename Name of the output file.
+ * @param V Number of vertices in the graph.
+ * @param distances Array containing the distances from the source vertex.
+ * @param has_negative Flag indicating whether the graph contains a negative cycle.
+ */
 void write_output(char* filename, int V, int *distances, int has_negative){
     char folder[] = "output/test/";
     char* path = (char*) malloc(strlen(folder) + strlen(filename) + 1);
@@ -78,13 +96,22 @@ void write_output(char* filename, int V, int *distances, int has_negative){
     free(path);
 }
 
+
+/**
+ * Implements the sequential version of the Bellman-Ford algorithm to find shortest paths from a source vertex to all the others.
+ *
+ * @param V Number of vertices in the graph.
+ * @param graph Pointer to the array representing the graph.
+ * @param source Source vertex from which shortest paths are computed.
+ * @param dist Array to store the distances from the source vertex.
+ * @param has_negative Pointer to a flag indicating whether the graph contains a negative cycle.
+ */
 void bellmanford(int V, int *graph, int source, int *dist, int *has_negative){
 
-    // Initialize distances from source to all other vertices as INFINITE
+    // Initialize distances from source to all other vertices as INF
     for (int i = 0; i < V; i++)
         dist[i] = INF;
     dist[source] = 0;
-
 
     // Relax all edges |V| - 1 times
     for (int i = 0; i < V - 1; i++) {
