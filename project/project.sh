@@ -89,6 +89,7 @@ echo "                                                                          
 # Tests to the CUDA implementation of Bellman-Ford, varying the number of vertices of the input graph and the block dimensions
 echo "-----------------------------------------Bellman-Ford CUDA w/ Positive/Negative Weights---------------------------------"
 echo "                                                                                                                        "
+echo "Block Dimensions: 64                                                                                                    "
 ./bin/bfcuda.out 0 "2000_neg" 64
 echo "                                                                                                                        "
 echo "------------------------------------------------------------------------------------------------------------------------"

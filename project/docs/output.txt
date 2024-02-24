@@ -1,0 +1,119 @@
+rm -f bin/*.out
+rm -f -rf input/test/
+rm -f -rf output/
+gcc -O3 -Wall -Wextra -Werror -pedantic -Wconversion -Wshadow src/gengraph.c -o bin/gengraph.out
+gcc -O3 -Wall -Wextra -Werror -pedantic -Wconversion -Wshadow src/bfseq.c -o bin/bfseq.out
+gcc -O3 -Wall -Wextra -Werror -pedantic -Wconversion -Wshadow src/bfomp.c -fopenmp -o bin/bfomp.out
+nvcc	 -O3 --expt-relaxed-constexpr -arch=sm_52 src/bfcuda.cu -o bin/bfcuda.out
+                                                                                                                        
+----------------------------------------Generating Graphs for Testing---------------------------------------------------
+                                                                                                                        
+Graph generated and written to file '1000_pos.txt'!
+Graph generated and written to file '2000_pos.txt'!
+Graph generated and written to file '3000_pos.txt'!
+Graph generated and written to file '4000_pos.txt'!
+Graph generated and written to file '2000_neg.txt'!
+                                                                                                                        
+------------------------------------------Bellman-Ford OMP w/ Positive Weights------------------------------------------
+                                                                                                                        
+Number of Threads: 1                                                                                                    
+1000 Vertices -> Elapsed Time: 19.771520 milliseconds
+2000 Vertices -> Elapsed Time: 79.217888 milliseconds
+3000 Vertices -> Elapsed Time: 151.406415 milliseconds
+4000 Vertices -> Elapsed Time: 272.564575 milliseconds
+                                                                                                                        
+Number of Threads: 2                                                                                                    
+1000 Vertices -> Elapsed Time: 14.928525 milliseconds
+2000 Vertices -> Elapsed Time: 41.057417 milliseconds
+3000 Vertices -> Elapsed Time: 77.827791 milliseconds
+4000 Vertices -> Elapsed Time: 143.634956 milliseconds
+                                                                                                                        
+Number of Threads: 4                                                                                                    
+1000 Vertices -> Elapsed Time: 6.673420 milliseconds
+2000 Vertices -> Elapsed Time: 33.529064 milliseconds
+3000 Vertices -> Elapsed Time: 55.826170 milliseconds
+4000 Vertices -> Elapsed Time: 97.851750 milliseconds
+                                                                                                                        
+Number of Threads: 8                                                                                                    
+1000 Vertices -> Elapsed Time: 11.853876 milliseconds
+2000 Vertices -> Elapsed Time: 35.346905 milliseconds
+3000 Vertices -> Elapsed Time: 72.044808 milliseconds
+4000 Vertices -> Elapsed Time: 106.274337 milliseconds
+                                                                                                                        
+------------------------------------------Bellman-Ford CUDA w/ Positive Weights-----------------------------------------
+                                                                                                                        
+Block Dimensions: 32                                                                                                    
+1000 Vertices-> Elapsed Time: 2.313760 milliseconds
+2000 Vertices-> Elapsed Time: 6.526080 milliseconds
+3000 Vertices-> Elapsed Time: 8.399073 milliseconds
+4000 Vertices-> Elapsed Time: 11.360288 milliseconds
+                                                                                                                        
+Block Dimensions: 64                                                                                                    
+1000 Vertices-> Elapsed Time: 2.309632 milliseconds
+2000 Vertices-> Elapsed Time: 6.553440 milliseconds
+3000 Vertices-> Elapsed Time: 6.977536 milliseconds
+4000 Vertices-> Elapsed Time: 11.289473 milliseconds
+                                                                                                                        
+Block Dimensions: 128                                                                                                    
+1000 Vertices-> Elapsed Time: 2.319616 milliseconds
+2000 Vertices-> Elapsed Time: 6.574720 milliseconds
+3000 Vertices-> Elapsed Time: 8.412000 milliseconds
+4000 Vertices-> Elapsed Time: 11.305376 milliseconds
+                                                                                                                         
+Block Dimensions: 256                                                                                                    
+1000 Vertices-> Elapsed Time: 2.334016 milliseconds
+2000 Vertices-> Elapsed Time: 6.644064 milliseconds
+3000 Vertices-> Elapsed Time: 8.494880 milliseconds
+4000 Vertices-> Elapsed Time: 11.405472 milliseconds
+                                                                                                                        
+------------------------------------------Bellman-Ford OMP w/ Positive/Negative Weights---------------------------------
+                                                                                                                        
+Number of Threads: 1
+2000 Vertices -> Elapsed Time: 40418.352442 milliseconds
+Number of Threads: 2
+2000 Vertices -> Elapsed Time: 22229.936061 milliseconds
+Number of Threads: 4
+2000 Vertices -> Elapsed Time: 14631.816130 milliseconds
+Number of Threads: 8
+2000 Vertices -> Elapsed Time: 12231.862562 milliseconds
+                                                                                                                        
+-----------------------------------------Bellman-Ford CUDA w/ Positive/Negative Weights---------------------------------
+                                                                                                                        
+2000 Vertices-> Elapsed Time: 1481.538086 milliseconds
+                                                                                                                        
+------------------------------------------------------------------------------------------------------------------------
+Architecture:                    x86_64
+CPU op-mode(s):                  32-bit, 64-bit
+Byte Order:                      Little Endian
+Address sizes:                   40 bits physical, 48 bits virtual
+CPU(s):                          4
+On-line CPU(s) list:             0-3
+Thread(s) per core:              1
+Core(s) per socket:              4
+Socket(s):                       1
+NUMA node(s):                    1
+Vendor ID:                       GenuineIntel
+CPU family:                      6
+Model:                           85
+Model name:                      Intel(R) Xeon(R) W-2123 CPU @ 3.60GHz
+Stepping:                        4
+CPU MHz:                         3600.144
+BogoMIPS:                        7200.28
+Virtualization:                  VT-x
+L1d cache:                       128 KiB
+L1i cache:                       128 KiB
+L2 cache:                        16 MiB
+L3 cache:                        16 MiB
+NUMA node0 CPU(s):               0-3
+Vulnerability Itlb multihit:     Not affected
+Vulnerability L1tf:              Mitigation; PTE Inversion; VMX flush not necessary, SMT disabled
+Vulnerability Mds:               Mitigation; Clear CPU buffers; SMT Host state unknown
+Vulnerability Meltdown:          Mitigation; PTI
+Vulnerability Mmio stale data:   Vulnerable: Clear CPU buffers attempted, no microcode; SMT Host state unknown
+Vulnerability Retbleed:          Mitigation; IBRS
+Vulnerability Spec store bypass: Mitigation; Speculative Store Bypass disabled via prctl and seccomp
+Vulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:        Mitigation; IBRS, IBPB conditional, STIBP disabled, RSB filling, PBRSB-eIBRS Not affected
+Vulnerability Srbds:             Not affected
+Vulnerability Tsx async abort:   Mitigation; Clear CPU buffers; SMT Host state unknown
+Flags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon rep_good nopl xtopology cpuid pni pclmulqdq vmx ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch cpuid_fault invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx avx512f avx512dq rdseed adx smap clflushopt clwb avx512cd avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves arat umip md_clear arch_capabilities
